@@ -1,11 +1,12 @@
 import React from "react";
-import Header from "./components/Header/index.js";
+import Header from "./components/Header";
+import Contents from "./components/Contents";
 
 function App() {
   return (
     <>
-      <Header></Header>
-      <div></div>
+      <Header selectMenu={"search"}></Header>
+      <Contents title={"도서 검색"} hasSearchBar={true}></Contents>
     </>
   );
 }
