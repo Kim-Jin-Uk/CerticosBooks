@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 const Wrapper = styled.div`
   width: 100%;
   height: 80px;
@@ -27,6 +28,10 @@ const Wrapper = styled.div`
     > span {
       margin-right: 56px;
       display: inline-block;
+      > a {
+        text-decoration: none;
+        color: #353c49;
+      }
       > div {
         position: relative;
         top: 2.33px;
@@ -42,8 +47,14 @@ const Header = (props: { selectMenu: string }) => {
     <Wrapper>
       <h1>CERTICOS BOOKS</h1>
       <nav>
-        <span>도서 검색 {props.selectMenu === "search" && <div></div>}</span>
-        <span>내가 찜한 책 {props.selectMenu === "own" && <div></div>}</span>
+        <span>
+          <Link to={"/"}>도서 검색</Link>
+          {props.selectMenu === "search" && <div></div>}
+        </span>
+        <span>
+          <Link to={"/own"}>내가 찜한 책</Link>
+          {props.selectMenu === "own" && <div></div>}
+        </span>
       </nav>
     </Wrapper>
   );
