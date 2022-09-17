@@ -89,6 +89,10 @@ const BuyButton = styled.button<{ isOpen: boolean }>`
   border: none;
   cursor: pointer;
   transition: 0.25s;
+  &:hover {
+    background: #82aeff;
+    transition: 0.25s;
+  }
 `;
 const DetailButton = styled.button<{ isOpen: boolean }>`
   width: 115px;
@@ -103,6 +107,10 @@ const DetailButton = styled.button<{ isOpen: boolean }>`
   outline: none;
   border: none;
   cursor: pointer;
+  &:hover {
+    background: #e3e3e3;
+    transition: 0.25s;
+  }
   img {
     width: 14px;
     height: 8px;
@@ -143,14 +151,14 @@ const PriceInfo = styled.div`
 `;
 const OriginPrice = styled.div`
   display: inline-block;
-  width: 76px;
+  min-width: 76px;
   font-weight: 350;
   font-size: 18px;
   text-decoration-line: line-through;
 `;
 const DiscountPrice = styled.div`
   display: inline-block;
-  width: 76px;
+  min-width: 76px;
   font-weight: 700;
   font-size: 18px;
 `;
@@ -202,11 +210,13 @@ const BookData = (props: { bookData: bookData }) => {
       <Author>{props.bookData.authors.join(", ")}</Author>
       {!isOpen && (
         <Price>
-          {formatter.format(
-            props.bookData.sale_price !== -1
-              ? props.bookData.sale_price
-              : props.bookData.price
-          )}
+          {props.bookData.price
+            ? formatter.format(
+                props.bookData.sale_price !== -1
+                  ? props.bookData.sale_price
+                  : props.bookData.price
+              )
+            : "판매처 없음"}
         </Price>
       )}
       <BuyButton
@@ -226,15 +236,17 @@ const BookData = (props: { bookData: bookData }) => {
           <Info>{props.bookData.contents}</Info>
           <PriceWrapper>
             <div>
-              <PriceInfo>원가</PriceInfo>
+              {props.bookData.price > 0 && <PriceInfo>원가</PriceInfo>}
               {props.bookData.sale_price !== -1 ? (
                 <OriginPrice>{`${formatter.format(
                   props.bookData.price
                 )}원`}</OriginPrice>
               ) : (
-                <DiscountPrice>{`${formatter.format(
-                  props.bookData.price
-                )}원`}</DiscountPrice>
+                <DiscountPrice>
+                  {props.bookData.price > 0
+                    ? `${formatter.format(props.bookData.price)}원`
+                    : "판매처 없음"}
+                </DiscountPrice>
               )}
             </div>
 
