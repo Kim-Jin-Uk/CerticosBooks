@@ -1,10 +1,12 @@
 import styled, { css } from "styled-components";
 import defaultIcon from "../../images/detail_icon_default.svg";
-import activeIcon from "../../images/detail_icon_default.svg";
+import activeIcon from "../../images/detail_icon_active.svg";
 import activeHeart from "../../images/heart_active.svg";
 import defaultHeart from "../../images/heart_default.svg";
 import { bookData } from "../../types/bookData";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { DEL_LIKES_DATA, PUSH_LIKES_DATA, RootState } from "../../reducers";
 const Wrapper = styled.div<{ isOpen: boolean }>`
   width: 960px;
   position: relative;
@@ -41,16 +43,25 @@ const Heart = styled.div<{ isOpen: boolean }>`
     height: 100%;
   }
 `;
-const Title = styled.span`
+const Title = styled.div<{ isOpen: boolean }>`
+  max-width: ${(props) => (props.isOpen ? "400px" : "300px")};
   margin: 50px 0 0 48px;
   font-weight: 700;
   font-size: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 19px;
 `;
-const Author = styled.span`
+const Author = styled.div`
   margin: 50px 0 0 16px;
   font-weight: 500;
   font-size: 14px;
   color: #6d7582;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 19px;
 `;
 const Price = styled.span`
   margin: 50px 0 0 auto;
@@ -59,6 +70,7 @@ const Price = styled.span`
 `;
 const BuyButton = styled.button<{ isOpen: boolean }>`
   width: ${(props) => (props.isOpen ? "240px" : "115px")};
+  min-width: 115px;
   height: 48px;
   margin: 35px 0 0 56px;
   ${(props) =>
@@ -80,6 +92,7 @@ const BuyButton = styled.button<{ isOpen: boolean }>`
 `;
 const DetailButton = styled.button<{ isOpen: boolean }>`
   width: 115px;
+  min-width: 115px;
   height: 48px;
   margin: 35px 16px 0 ${(props) => (props.isOpen ? "auto" : "8px")};
   font-weight: 500;
@@ -94,13 +107,6 @@ const DetailButton = styled.button<{ isOpen: boolean }>`
     width: 14px;
     height: 8px;
     margin-left: 5px;
-    transition: 0.25s;
-  }
-  &:hover {
-    img {
-      transform: rotate(180deg);
-      transition: 0.25s;
-    }
   }
 `;
 const InfoTitle = styled.span`
@@ -152,25 +158,64 @@ const BookData = (props: { bookData: bookData }) => {
   const formatter = Intl.NumberFormat("kr-KO");
   const [isOpen, setIsOpen] = useState(false);
   const [isLike, setIsLike] = useState(false);
+  const dispatch = useDispatch();
+
+  const { likesDataHashMap } = useSelector((state: RootState) => state);
+  const onChangeIsOpen = useCallback(() => {
+    setIsOpen(!isOpen);
+  }, [isOpen]);
+  const onChangeIsLike = useCallback(() => {
+    if (!isLike) {
+      dispatch({
+        type: PUSH_LIKES_DATA,
+        data: props.bookData,
+      });
+    } else {
+      dispatch({
+        type: DEL_LIKES_DATA,
+        data: props.bookData.isbn,
+      });
+    }
+    setIsLike(!isLike);
+  }, [isLike, props.bookData]);
+  useEffect(() => {
+    if (likesDataHashMap[props.bookData.isbn]) {
+      setIsLike(true);
+    } else {
+      setIsLike(false);
+    }
+  }, [likesDataHashMap]);
   return (
     <Wrapper isOpen={isOpen}>
-      <Img isOpen={isOpen} src={props.bookData.thumbnail} />
-      <Heart onClick={() => setIsLike(!isLike)} isOpen={isOpen}>
+      <Img
+        isOpen={isOpen}
+        src={
+          props.bookData.thumbnail ||
+          "https://search1.kakaocdn.net/thumb/C116x164.q85/?fname=http://search1.daumcdn.net/search/statics/common/img/noimg/4grid.png"
+        }
+      />
+      <Heart onClick={onChangeIsLike} isOpen={isOpen}>
         <img src={isLike ? activeHeart : defaultHeart}></img>
       </Heart>
 
-      <Title>{props.bookData.title}</Title>
+      <Title isOpen={isOpen}>{props.bookData.title}</Title>
       <Author>{props.bookData.authors.join(", ")}</Author>
-      {!isOpen && <Price>{formatter.format(props.bookData.price)}</Price>}
-      <BuyButton isOpen={isOpen}>
+      {!isOpen && (
+        <Price>
+          {formatter.format(
+            props.bookData.sale_price !== -1
+              ? props.bookData.sale_price
+              : props.bookData.price
+          )}
+        </Price>
+      )}
+      <BuyButton
+        isOpen={isOpen}
+        onClick={() => window.open(props.bookData.url, "_blank")}
+      >
         <div>구매하기</div>
       </BuyButton>
-      <DetailButton
-        isOpen={isOpen}
-        onClick={() => {
-          setIsOpen(!isOpen);
-        }}
-      >
+      <DetailButton isOpen={isOpen} onClick={onChangeIsOpen}>
         <div>
           상세보기 <img src={isOpen ? activeIcon : defaultIcon}></img>
         </div>
@@ -182,7 +227,7 @@ const BookData = (props: { bookData: bookData }) => {
           <PriceWrapper>
             <div>
               <PriceInfo>원가</PriceInfo>
-              {props.bookData.price !== props.bookData.sale_price ? (
+              {props.bookData.sale_price !== -1 ? (
                 <OriginPrice>{`${formatter.format(
                   props.bookData.price
                 )}원`}</OriginPrice>
@@ -193,7 +238,7 @@ const BookData = (props: { bookData: bookData }) => {
               )}
             </div>
 
-            {props.bookData.price !== props.bookData.sale_price && (
+            {props.bookData.sale_price !== -1 && (
               <div style={{ marginTop: 8 }}>
                 <PriceInfo>할인가</PriceInfo>
                 <DiscountPrice>{`${formatter.format(

@@ -4,6 +4,9 @@
   url(./styles/fonts/NotoSansKR.woff) format('woff'),
   url(./styles/fonts/NotoSansKR.otf) format('truetype')
 }
+html,body{
+  min-width: 1320px;
+}
 *{
   box-sizing: border-box;
   margin: 0;

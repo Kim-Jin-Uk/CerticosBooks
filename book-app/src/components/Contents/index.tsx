@@ -1,12 +1,17 @@
 import styled from "styled-components";
 import SearchBox from "../SearchBox";
-import { useState } from "react";
 import NullData from "../NullData";
 import { bookData } from "../../types/bookData";
 import BookData from "../BookData";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, SET_LIKES_DATA } from "../../reducers";
+import BottomNav from "../BottomNav";
+import ErrorData from "../NullData/error";
+import { useEffect } from "react";
 const Wrapper = styled.div`
   height: 100%;
-  margin: 160px 480px;
+  width: 960px;
+  margin: 80px auto;
   color: #353c49;
   > h2 {
     font-weight: 700;
@@ -24,55 +29,66 @@ const Title = styled.div`
     color: #353c49;
   }
 `;
-const Contents = (props: { hasSearchBar: boolean; title: string }) => {
-  const [hasData, setHasData] = useState(true);
-  const [books, setBooks] = useState([
-    {
-      authors: ["기시미 이치로", "고가 후미타케"],
-      contents:
-        "인간은 변할 수 있고, 누구나 행복해 질 수 있다. 단 그러기 위해서는 ‘용기’가 필요하다고 말한 철학자가 있다. 바로 프로이트, 융과 함께 ‘심리학의 3대 거장’으로 일컬어지고 있는 알프레드 아들러다. 『미움받을 용기』는 아들러 심리학에 관한 일본의 1인자 철학자 기시미 이치로와 베스트셀러 작가인 고가 후미타케의 저서로, 아들러의 심리학을 ‘대화체’로 쉽고 맛깔나게 정리하고 있다. 아들러 심리학을 공부한 철학자와 세상에 부정적이고 열등감 많은",
-      datetime: "2014-11-17T00:00:00.000+09:00",
-      isbn: "8996991341 9788996991342",
-      price: 14900,
-      publisher: "인플루엔셜",
-      sale_price: 13410,
-      status: "정상판매",
-      thumbnail:
-        "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1467038",
-      title: "미움받을 용기",
-      translators: ["전경아"],
-      url: "https://search.daum.net/search?w=bookpage&bookId=1467038&q=%EB%AF%B8%EC%9B%80%EB%B0%9B%EC%9D%84+%EC%9A%A9%EA%B8%B0",
-    },
-    {
-      authors: ["기시미 이치로", "고가 후미타케"],
-      contents:
-        "인간은 변할 수 있고, 누구나 행복해 질 수 있다. 단 그러기 위해서는 ‘용기’가 필요하다고 말한 철학자가 있다. 바로 프로이트, 융과 함께 ‘심리학의 3대 거장’으로 일컬어지고 있는 알프레드 아들러다. 『미움받을 용기』는 아들러 심리학에 관한 일본의 1인자 철학자 기시미 이치로와 베스트셀러 작가인 고가 후미타케의 저서로, 아들러의 심리학을 ‘대화체’로 쉽고 맛깔나게 정리하고 있다. 아들러 심리학을 공부한 철학자와 세상에 부정적이고 열등감 많은",
-      datetime: "2014-11-17T00:00:00.000+09:00",
-      isbn: "8996991341 9788996991342",
-      price: 14900,
-      publisher: "인플루엔셜",
-      sale_price: 14900,
-      status: "정상판매",
-      thumbnail:
-        "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1467038",
-      title: "미움받을 용기",
-      translators: ["전경아"],
-      url: "https://search.daum.net/search?w=bookpage&bookId=1467038&q=%EB%AF%B8%EC%9B%80%EB%B0%9B%EC%9D%84+%EC%9A%A9%EA%B8%B0",
-    },
-  ] as bookData[]);
+const Contents = (props: {
+  hasSearchBar: boolean;
+  pageIndex: number | null;
+  path: string | null;
+  likeMode: boolean;
+}) => {
+  const {
+    booksDataList,
+    likesDataList,
+    booksPageableCount,
+    getBooksDataListForKeywordSuccess,
+  } = useSelector((state: RootState) => state);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch({ type: SET_LIKES_DATA });
+  }, []);
   return (
     <Wrapper>
-      <h2>{props.title}</h2>
+      <h2>{props.hasSearchBar ? "도서 검색" : "내가 찜한 책"}</h2>
       {props.hasSearchBar && <SearchBox></SearchBox>}
       <Title>
-        <span>도서 검색 결과 총 </span>
-        <span>0</span>
+        <span>{props.hasSearchBar ? "도서 검색 결과" : "찜한 책"} 총 </span>
+        <span style={{ color: "#4880EE" }}>
+          {props.likeMode ? likesDataList.length : booksPageableCount}
+        </span>
         <span>건</span>
       </Title>
-      {hasData ? (
-        books.map((book: bookData) => <BookData bookData={book}></BookData>)
+      {!props.likeMode ? (
+        booksDataList.length ? (
+          booksDataList.map((book: bookData, i) => (
+            <BookData key={`${book.isbn}-${i}`} bookData={book}></BookData>
+          ))
+        ) : getBooksDataListForKeywordSuccess ? (
+          <NullData></NullData>
+        ) : (
+          <ErrorData></ErrorData>
+        )
+      ) : props.pageIndex !== null &&
+        likesDataList.length > (props.pageIndex - 1) * 10 ? (
+        likesDataList
+          .slice((props.pageIndex - 1) * 10, props.pageIndex * 10)
+          .map((book: bookData, i) => (
+            <BookData key={`${book.isbn}-${i}`} bookData={book}></BookData>
+          ))
       ) : (
         <NullData></NullData>
+      )}
+      {!props.likeMode && booksDataList.length !== 0 && props.pageIndex && (
+        <BottomNav
+          pageIndex={props.pageIndex}
+          path={props.path}
+          likeMode={props.likeMode}
+        ></BottomNav>
+      )}
+      {props.likeMode && likesDataList.length !== 0 && props.pageIndex && (
+        <BottomNav
+          pageIndex={props.pageIndex}
+          path={props.path}
+          likeMode={props.likeMode}
+        ></BottomNav>
       )}
     </Wrapper>
   );

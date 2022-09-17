@@ -1,19 +1,28 @@
 import styled from "styled-components";
 import searchIcon from "../../images/search_icon.svg";
+import closeIcon from "../../images/close_icon.svg";
+import defaultIcon from "../../images/detail_icon_default.svg";
+import activeIcon from "../../images/detail_icon_active.svg";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { defaultObject } from "../../types/utils";
 const Wrapper = styled.div`
+  position: relative;
   width: 100%;
   margin-top: 16px;
 `;
-const Input = styled.div`
+const MainInput = styled.form`
   width: 480px;
   height: 50px;
   border-radius: 25px;
   background: #f2f4f6;
   padding: 10px;
   display: inline-block;
-  > img {
+  > button {
     margin: 5px;
     cursor: pointer;
+    background: none;
+    border: none;
   }
   > input {
     display: inline-block;
@@ -29,7 +38,7 @@ const Input = styled.div`
     font-size: 16px;
   }
 `;
-const Button = styled.button`
+const MainButton = styled.button`
   margin-left: 16px;
   width: 72px;
   height: 35.27px;
@@ -44,15 +53,211 @@ const Button = styled.button`
   top: 7.37px;
   position: relative;
   padding: 10px 0;
+  transition: 0.25s;
+
+  &:hover {
+    color: #5b5f67;
+    border: 1px solid #5b5f67;
+    transition: 0.25s;
+  }
+`;
+const DetailForm = styled.form`
+  position: absolute;
+  width: 360px;
+  height: 160px;
+  background: #ffffff;
+  box-shadow: 0px 4px 14px 6px rgba(151, 151, 151, 0.15);
+  border-radius: 8px;
+  left: 352px;
+  top: 59px;
+  z-index: 1;
+`;
+const CloseButton = styled.img`
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top: 12px;
+  right: 12px;
+  cursor: pointer;
+`;
+const SearchArea = styled.div`
+  margin: 44px 24px 32px;
+`;
+const DropDownWrapper = styled.div`
+  position: relative;
+  width: 100px;
+  height: 28px;
+  display: inline-block;
+  border-bottom: 1px solid #d2d6da;
+  margin-right: 4px;
+  cursor: pointer;
+  > span {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 700;
+    font-size: 14px;
+    color: #353c49;
+    margin-left: 8px;
+  }
+  > img {
+    position: absolute;
+    right: 9.5px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+`;
+const DropDown = styled.div`
+  width: 100px;
+  position: absolute;
+  background: #ffffff;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+  top: 35px;
+
+  > div {
+    width: 100%;
+    height: 30px;
+    padding: 4px 8px;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 22px;
+    color: #8d94a0;
+    transition: 0.25s;
+
+    &:hover {
+      background: #ebecef;
+      transition: 0.25s;
+    }
+  }
+`;
+const DetailInput = styled.input`
+  width: 208px;
+  height: 28px;
+  vertical-align: top;
+  outline: none;
+  border: none;
+  border-bottom: 1px solid #4880ee;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  padding: 5px 8px;
+`;
+const DetailButton = styled.button`
+  width: 100%;
+  height: 36px;
+  margin-top: 16px;
+  background: #4880ee;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: 0.25s;
+  &:hover {
+    background: #82aeff;
+    transition: 0.25s;
+  }
 `;
 const SearchBox = () => {
+  const [mainKeyword, setMainKeyword] = useState("");
+  const [detailKeyword, setDetailKeyword] = useState("");
+  const [isDetailMode, setIsDetailMode] = useState(false);
+  const [isDropdownMode, setIsDropdownMode] = useState(false);
+  const [searchType, setSearchType] = useState("title");
+  const typesList = ["title", "person", "publisher"];
+  const typeToText: defaultObject = {
+    title: "제목",
+    person: "저자명",
+    publisher: "출판사",
+  };
+  const navigate = useNavigate();
+
+  const onChangeDetailMode = useCallback(() => {
+    setIsDetailMode(!isDetailMode);
+  }, [isDetailMode]);
+  const onChangeDropdownMode = useCallback(() => {
+    setIsDropdownMode(!isDropdownMode);
+  }, [isDropdownMode]);
+  const onChangeSearchType = useCallback((key: string) => {
+    setSearchType(key);
+  }, []);
+  const onChangeMainKeyword = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      e.preventDefault();
+      setMainKeyword(e.target.value);
+      setDetailKeyword("");
+    },
+    []
+  );
+  const onChangeDetailKeyword = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      e.preventDefault();
+      setDetailKeyword(e.target.value);
+      setMainKeyword("");
+    },
+    []
+  );
+  const onSubmitFormForMainKeyword = useCallback(() => {
+    if (!mainKeyword) return alert("검색어를 입력해주세요");
+    navigate(`/search/title/${mainKeyword}/1`);
+  }, [mainKeyword]);
+  const onSubmitFormForDetailKeyword = useCallback(() => {
+    if (!detailKeyword) return alert("검색어를 입력해주세요");
+    navigate(`/search/${searchType}/${detailKeyword}/1`);
+  }, [searchType, detailKeyword]);
   return (
     <Wrapper>
-      <Input>
-        <img src={searchIcon}></img>
-        <input placeholder={"검색어를 입력하세요"}></input>
-      </Input>
-      <Button>상세 검색</Button>
+      <MainInput onSubmit={onSubmitFormForMainKeyword}>
+        <button>
+          <img src={searchIcon} alt="검색 하기"></img>
+        </button>
+        <input
+          placeholder={"검색어를 입력하세요"}
+          value={mainKeyword}
+          onChange={onChangeMainKeyword}
+        ></input>
+      </MainInput>
+      <MainButton onClick={onChangeDetailMode}>상세 검색</MainButton>
+      {isDetailMode && (
+        <DetailForm>
+          <CloseButton
+            onClick={onChangeDetailMode}
+            src={closeIcon}
+            alt="폼 닫기"
+          ></CloseButton>
+          <SearchArea>
+            <DropDownWrapper onClick={onChangeDropdownMode}>
+              <span>{typeToText[searchType]}</span>
+              <img
+                src={isDropdownMode ? activeIcon : defaultIcon}
+                alt={isDropdownMode ? "접기" : "펼치기"}
+              />
+              {isDropdownMode && (
+                <DropDown>
+                  {typesList
+                    .filter((v) => v !== searchType)
+                    .map((v) => (
+                      <div key={v} onClick={() => onChangeSearchType(v)}>
+                        {typeToText[v]}
+                      </div>
+                    ))}
+                </DropDown>
+              )}
+            </DropDownWrapper>
+            <DetailInput
+              placeholder={"검색어 입력"}
+              value={detailKeyword}
+              onChange={onChangeDetailKeyword}
+              type="text"
+            />
+            <DetailButton onClick={onSubmitFormForDetailKeyword}>
+              검색하기
+            </DetailButton>
+          </SearchArea>
+        </DetailForm>
+      )}
     </Wrapper>
   );
 };

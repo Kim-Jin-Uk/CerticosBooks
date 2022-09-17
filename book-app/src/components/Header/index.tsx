@@ -1,30 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 const Wrapper = styled.div`
   width: 100%;
   height: 80px;
-  position: absolute;
   top: 0;
-  text-align: center;
   color: #353c49;
   > h1 {
+    width: 207px;
     display: inline-block;
-    margin-left: 160px;
-    margin-right: 400px;
     font-weight: 700;
     font-size: 24px;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
+    position: absolute;
+    left: 160px;
+    top: 24px;
   }
   > nav {
+    width: 100%;
+    margin: 24px 0 0;
+    padding: 0 calc(50% - 480px);
     display: inline-block;
     font-weight: 500;
     font-size: 20px;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
+    text-align: center;
     > span {
       margin-right: 56px;
       display: inline-block;
@@ -42,18 +40,30 @@ const Wrapper = styled.div`
     }
   }
 `;
-const Header = (props: { selectMenu: string }) => {
+const Header = () => {
+  const location = useLocation();
+  const [selectMenu, setSelectMenu] = useState("search");
+  useEffect(() => {
+    if (
+      location.pathname === "/" ||
+      location.pathname.split("/")[1] === "search"
+    ) {
+      setSelectMenu("search");
+    } else {
+      setSelectMenu("own");
+    }
+  }, [location]);
   return (
     <Wrapper>
       <h1>CERTICOS BOOKS</h1>
       <nav>
         <span>
           <Link to={"/"}>도서 검색</Link>
-          {props.selectMenu === "search" && <div></div>}
+          {selectMenu === "search" && <div></div>}
         </span>
         <span>
-          <Link to={"/own"}>내가 찜한 책</Link>
-          {props.selectMenu === "own" && <div></div>}
+          <Link to={"/own/1"}>내가 찜한 책</Link>
+          {selectMenu === "own" && <div></div>}
         </span>
       </nav>
     </Wrapper>

@@ -12,3 +12,11 @@ export type bookData = {
   translators: string[];
   url: string;
 };
+
+export type bookRequest = {
+  query: string;
+  sort: string | null;
+  page: number;
+  size: number;
+  target: string | null;
+};
