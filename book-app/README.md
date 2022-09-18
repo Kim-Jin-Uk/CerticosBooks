@@ -1,46 +1,12 @@
-# Getting Started with Create React App
+# 책 검색 애플리케이션 제작
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+- 전역 스타일(폰트와 같은) 적용은 전역 css로 처리
+- 상태관리 및 비동기 통신을 위해 위해 redux, redux-saga 사용
+- 데이터 보존을 위한 localStorage 사용
 
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+추가 기능 구현
+- 호버등의 효과시 인터랙션 적용
+- 책 썸네일 이미지 주소가 존재하지 않을시 디폴트 이미지 주소로 적용
+- 책 검색 결과가 너무 많을 시 화며 하단의 pagination이 지저분해 보일 수 있으므로 줄임표 '···' 적용
+- 서버와 정상적으로 통신하지 못하였을 때 처리 페이지 구현
+- 책 판매처가 존재하지 않는 경우 가격을 "판매처 없음"으로 처리
