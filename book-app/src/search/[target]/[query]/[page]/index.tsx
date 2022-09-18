@@ -1,10 +1,7 @@
 import { useParams } from "react-router-dom";
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  GET_BOOKS_DATA_LIST_FOR_KEYWORD_REQUEST,
-  RootState,
-} from "../../../../reducers";
+import { useDispatch } from "react-redux";
+import { GET_BOOKS_DATA_LIST_FOR_KEYWORD_REQUEST } from "../../../../reducers";
 import Header from "../../../../components/Header";
 import Contents from "../../../../components/Contents";
 
@@ -23,7 +20,7 @@ const Search = () => {
         target: target,
       },
     });
-  }, [params]);
+  }, [dispatch, page, params, query, target]);
   return (
     <>
       <Header></Header>

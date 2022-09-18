@@ -1,3 +1,11 @@
+export type defaultObject = {
+  [key: string]: string;
+};
+
+export type likesHashMap = {
+  [key: string]: boolean;
+};
+
 export type bookData = {
   authors: string[];
   contents: string;

@@ -1,42 +1,41 @@
 import styled, { css } from "styled-components";
 import nextIcon from "../../images/next_icon.svg";
 import prevIcon from "../../images/prev_icon.svg";
-const Button = styled.button<{ isActive: boolean; isPressAble: boolean }>`
+import { DefaultButton } from "../../styles/styledUtils";
+const Button = styled(DefaultButton)<{
+  isActive: boolean;
+  isPressAble: boolean;
+}>`
   margin: 4px;
   width: 24px;
   height: 24px;
   border-radius: 4px;
-  border: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   vertical-align: top;
-  > div {
-    font-weight: 500;
-    font-size: 14px;
-  }
+  font-size: 16px;
   ${(props) =>
     props.isActive
       ? css`
           color: #ffffff;
           background: #4880ee;
-          cursor: pointer;
         `
       : css`
           color: #8d94a0;
           background: none;
-          ${props.isPressAble &&
-          css`
-            border: 1px solid #dadada;
-            cursor: pointer;
-
-            &:hover {
-              background: #e3e3e3;
-              transition: 0.25s;
-            }
-
-            transition: 0.25s;
-          `}
+          ${props.isPressAble
+            ? css`
+                border: 1px solid #dadada;
+                &:hover {
+                  background: #e3e3e3;
+                  transition: 0.25s;
+                }
+                transition: 0.25s;
+              `
+            : css`
+                cursor: default;
+              `}
         `}
 `;
 const Item = (props: {

@@ -27,11 +27,14 @@ const BottomNav = (props: {
         (props.likeMode ? likesDataList.length : booksPageableCount) / 10
       )
     );
-  }, [booksPageableCount, likesDataList]);
+  }, [booksPageableCount, likesDataList, props.likeMode]);
 
-  const onClickItem = useCallback((num: number) => {
-    navigate(`${props.path}${num}`);
-  }, []);
+  const onClickItem = useCallback(
+    (num: number) => {
+      navigate(`${props.path}${num}`);
+    },
+    [navigate, props.path]
+  );
 
   return (
     <Wrapper>

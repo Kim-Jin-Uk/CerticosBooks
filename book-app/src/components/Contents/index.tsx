@@ -1,12 +1,11 @@
 import styled from "styled-components";
 import SearchBox from "../SearchBox";
 import NullData from "../NullData";
-import { bookData } from "../../types/bookData";
+import { bookData } from "../../utils/types";
 import BookData from "../BookData";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, SET_LIKES_DATA } from "../../reducers";
 import BottomNav from "../BottomNav";
-import ErrorData from "../NullData/error";
 import { useEffect } from "react";
 const Wrapper = styled.div`
   height: 100%;
@@ -44,7 +43,7 @@ const Contents = (props: {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch({ type: SET_LIKES_DATA });
-  }, []);
+  }, [dispatch]);
   return (
     <Wrapper>
       <h2>{props.hasSearchBar ? "도서 검색" : "내가 찜한 책"}</h2>
@@ -61,10 +60,14 @@ const Contents = (props: {
           booksDataList.map((book: bookData, i) => (
             <BookData key={`${book.isbn}-${i}`} bookData={book}></BookData>
           ))
-        ) : getBooksDataListForKeywordSuccess ? (
-          <NullData></NullData>
         ) : (
-          <ErrorData></ErrorData>
+          <NullData
+            contents={
+              getBooksDataListForKeywordSuccess
+                ? "검색된 결과가 없습니다."
+                : "검색중 오류가 발생하였습니다. 다시 시도해 주세요"
+            }
+          ></NullData>
         )
       ) : props.pageIndex !== null &&
         likesDataList.length > (props.pageIndex - 1) * 10 ? (
@@ -74,7 +77,7 @@ const Contents = (props: {
             <BookData key={`${book.isbn}-${i}`} bookData={book}></BookData>
           ))
       ) : (
-        <NullData></NullData>
+        <NullData contents={"검색된 결과가 없습니다."}></NullData>
       )}
       {!props.likeMode && booksDataList.length !== 0 && props.pageIndex && (
         <BottomNav

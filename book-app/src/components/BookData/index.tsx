@@ -3,10 +3,16 @@ import defaultIcon from "../../images/detail_icon_default.svg";
 import activeIcon from "../../images/detail_icon_active.svg";
 import activeHeart from "../../images/heart_active.svg";
 import defaultHeart from "../../images/heart_default.svg";
-import { bookData } from "../../types/bookData";
+import { bookData } from "../../utils/types";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DEL_LIKES_DATA, PUSH_LIKES_DATA, RootState } from "../../reducers";
+import {
+  AbbreviationDiv,
+  DefaultButton,
+  PriceDiv,
+} from "../../styles/styledUtils";
+
 const Wrapper = styled.div<{ isOpen: boolean }>`
   width: 960px;
   position: relative;
@@ -25,8 +31,8 @@ const Wrapper = styled.div<{ isOpen: boolean }>`
   line-height: 100%;
 `;
 const Img = styled.img<{ isOpen: boolean }>`
-  margin: 25px 0 0 46px;
-  width: ${(props) => (props.isOpen ? `${(48 * 278) / 68}px` : "48px")};
+  margin: ${(props) => (props.isOpen ? "25px" : "16px")} 0 0 46px;
+  min-width: ${(props) => (props.isOpen ? `${(48 * 278) / 68}px` : "48px")};
   height: ${(props) => (props.isOpen ? "278px" : "68px")};
   transition: 0.25s;
 `;
@@ -43,36 +49,29 @@ const Heart = styled.div<{ isOpen: boolean }>`
     height: 100%;
   }
 `;
-const Title = styled.div<{ isOpen: boolean }>`
+const Title = styled(AbbreviationDiv)<{ isOpen: boolean }>`
   max-width: ${(props) => (props.isOpen ? "400px" : "300px")};
-  margin: 50px 0 0 48px;
+  margin: ${(props) => (props.isOpen ? "50px" : "40px")} 0 0 48px;
   font-weight: 700;
   font-size: 18px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 19px;
 `;
-const Author = styled.div`
-  margin: 50px 0 0 16px;
+const Author = styled(AbbreviationDiv)<{ isOpen: boolean }>`
+  margin: ${(props) => (props.isOpen ? "50px" : "40px")} 0 0 16px;
   font-weight: 500;
   font-size: 14px;
   color: #6d7582;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 19px;
 `;
-const Price = styled.span`
-  margin: 50px 0 0 auto;
+const Price = styled(PriceDiv)<{ isOpen: boolean }>`
+  min-width: 86px;
+  margin: ${(props) => (props.isOpen ? "50px" : "42px")} 0 0 auto;
   font-weight: 700;
   font-size: 18px;
 `;
-const BuyButton = styled.button<{ isOpen: boolean }>`
+const BuyButton = styled(DefaultButton)<{ isOpen: boolean }>`
   width: ${(props) => (props.isOpen ? "240px" : "115px")};
   min-width: 115px;
   height: 48px;
-  margin: 35px 0 0 56px;
+  margin: 26px 0 0 56px;
   ${(props) =>
     props.isOpen &&
     css`
@@ -80,33 +79,21 @@ const BuyButton = styled.button<{ isOpen: boolean }>`
       bottom: 40px;
       right: 16px;
     `}
-  font-weight: 500;
-  font-size: 16px;
   color: #ffffff;
   background: #4880ee;
-  border-radius: 8px;
-  outline: none;
-  border: none;
-  cursor: pointer;
   transition: 0.25s;
   &:hover {
     background: #82aeff;
     transition: 0.25s;
   }
 `;
-const DetailButton = styled.button<{ isOpen: boolean }>`
+const DetailButton = styled(DefaultButton)<{ isOpen: boolean }>`
   width: 115px;
   min-width: 115px;
   height: 48px;
-  margin: 35px 16px 0 ${(props) => (props.isOpen ? "auto" : "8px")};
-  font-weight: 500;
-  font-size: 16px;
+  margin: 26px 16px 0 ${(props) => (props.isOpen ? "auto" : "8px")};
   color: #6d7582;
   background: #f2f4f6;
-  border-radius: 8px;
-  outline: none;
-  border: none;
-  cursor: pointer;
   &:hover {
     background: #e3e3e3;
     transition: 0.25s;
@@ -120,14 +107,14 @@ const DetailButton = styled.button<{ isOpen: boolean }>`
 const InfoTitle = styled.span`
   position: absolute;
   top: 85px;
-  left: 293px;
+  left: 290px;
   font-weight: 700;
   font-size: 14px;
 `;
 const Info = styled.p`
   position: absolute;
   top: 123px;
-  left: 293px;
+  left: 290px;
   width: 360px;
   font-weight: 500;
   font-size: 10px;
@@ -138,26 +125,22 @@ const PriceWrapper = styled.div`
   bottom: 115px;
   right: 16px;
 `;
-const PriceInfo = styled.div`
+const PriceInfo = styled(PriceDiv)`
   width: 37px;
-  display: inline-block;
   font-weight: 500;
   font-size: 10px;
   color: #8d94a0;
   margin: 0 8px;
-  text-align: right;
   position: relative;
   top: -2px;
 `;
-const OriginPrice = styled.div`
-  display: inline-block;
+const OriginPrice = styled(PriceDiv)`
   min-width: 76px;
   font-weight: 350;
   font-size: 18px;
   text-decoration-line: line-through;
 `;
-const DiscountPrice = styled.div`
-  display: inline-block;
+const DiscountPrice = styled(PriceDiv)`
   min-width: 76px;
   font-weight: 700;
   font-size: 18px;
@@ -185,14 +168,14 @@ const BookData = (props: { bookData: bookData }) => {
       });
     }
     setIsLike(!isLike);
-  }, [isLike, props.bookData]);
+  }, [dispatch, isLike, props.bookData]);
   useEffect(() => {
     if (likesDataHashMap[props.bookData.isbn]) {
       setIsLike(true);
     } else {
       setIsLike(false);
     }
-  }, [likesDataHashMap]);
+  }, [likesDataHashMap, props.bookData.isbn]);
   return (
     <Wrapper isOpen={isOpen}>
       <Img
@@ -203,13 +186,16 @@ const BookData = (props: { bookData: bookData }) => {
         }
       />
       <Heart onClick={onChangeIsLike} isOpen={isOpen}>
-        <img src={isLike ? activeHeart : defaultHeart}></img>
+        <img
+          src={isLike ? activeHeart : defaultHeart}
+          alt={isLike ? "찜 취소하기" : "찜 하기"}
+        ></img>
       </Heart>
 
       <Title isOpen={isOpen}>{props.bookData.title}</Title>
-      <Author>{props.bookData.authors.join(", ")}</Author>
+      <Author isOpen={isOpen}>{props.bookData.authors.join(", ")}</Author>
       {!isOpen && (
-        <Price>
+        <Price isOpen={isOpen}>
           {props.bookData.price
             ? formatter.format(
                 props.bookData.sale_price !== -1
@@ -227,7 +213,11 @@ const BookData = (props: { bookData: bookData }) => {
       </BuyButton>
       <DetailButton isOpen={isOpen} onClick={onChangeIsOpen}>
         <div>
-          상세보기 <img src={isOpen ? activeIcon : defaultIcon}></img>
+          상세보기{" "}
+          <img
+            src={isOpen ? activeIcon : defaultIcon}
+            alt={isOpen ? "상세보기 접기" : "상세보기"}
+          ></img>
         </div>
       </DetailButton>
       {isOpen && (

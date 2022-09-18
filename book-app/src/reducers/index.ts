@@ -1,8 +1,7 @@
 import { produce, Draft } from "immer";
 import { AnyAction } from "redux";
-import { likesHashMap } from "../types/utils";
+import { likesHashMap, bookData } from "../utils/types";
 import JsonLocalStorage from "../utils/jsonLocalStorage";
-import { bookData } from "../types/bookData";
 
 export const initialSate = {
   booksDataList: [],

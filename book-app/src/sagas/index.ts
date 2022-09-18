@@ -5,7 +5,7 @@ import {
   GET_BOOKS_DATA_LIST_FOR_KEYWORD_REQUEST,
   GET_BOOKS_DATA_LIST_FOR_KEYWORD_SUCCESS,
 } from "../reducers";
-import { bookRequest } from "../types/bookData";
+import { bookRequest } from "../utils/types";
 
 function getBooksDataListForKeywordAPI(data: bookRequest) {
   console.log("req api", data);
@@ -22,7 +22,7 @@ function getBooksDataListForKeywordAPI(data: bookRequest) {
 }
 function* getBooksDataListForKeyword(action: any) {
   try {
-    const result: AxiosResponse<any> = yield call(
+    const result: AxiosResponse = yield call(
       getBooksDataListForKeywordAPI,
       action.data
     );

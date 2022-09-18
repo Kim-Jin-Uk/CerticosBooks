@@ -3,15 +3,16 @@ import searchIcon from "../../images/search_icon.svg";
 import closeIcon from "../../images/close_icon.svg";
 import defaultIcon from "../../images/detail_icon_default.svg";
 import activeIcon from "../../images/detail_icon_active.svg";
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { defaultObject } from "../../types/utils";
+import { defaultObject } from "../../utils/types";
+import { DefaultButton, DefaultInput } from "../../styles/styledUtils";
 const Wrapper = styled.div`
   position: relative;
   width: 100%;
   margin-top: 16px;
 `;
-const MainInput = styled.form`
+const MainForm = styled.form`
   width: 480px;
   height: 50px;
   border-radius: 25px;
@@ -24,37 +25,27 @@ const MainInput = styled.form`
     background: none;
     border: none;
   }
-  > input {
-    display: inline-block;
-    margin: 0 0 0 16px;
-    padding: 0;
-    height: 100%;
-    vertical-align: top;
-    width: calc(100% - 46px);
-    border: none;
-    background: none;
-    outline: none;
-    font-weight: 500;
-    font-size: 16px;
-  }
 `;
-const MainButton = styled.button`
+const MainInput = styled(DefaultInput)`
+  margin: 0 0 0 16px;
+  padding: 0;
+  height: 100%;
+  width: calc(100% - 46px);
+  font-size: 16px;
+`;
+const MainButton = styled(DefaultButton)`
   margin-left: 16px;
   width: 72px;
   height: 35.27px;
   color: #8d94a0;
   border: 1px solid #8d94a0;
   background: none;
-  border-radius: 8px;
-  font-weight: 500;
   font-size: 14px;
-  cursor: pointer;
   vertical-align: top;
   top: 7.37px;
   position: relative;
   padding: 10px 0;
   transition: 0.25s;
-
   &:hover {
     color: #5b5f67;
     border: 1px solid #5b5f67;
@@ -66,7 +57,7 @@ const DetailForm = styled.form`
   width: 360px;
   height: 160px;
   background: #ffffff;
-  box-shadow: 0px 4px 14px 6px rgba(151, 151, 151, 0.15);
+  box-shadow: 0 4px 14px 6px rgba(151, 151, 151, 0.15);
   border-radius: 8px;
   left: 352px;
   top: 59px;
@@ -113,7 +104,6 @@ const DropDown = styled.div`
   background: #ffffff;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
   top: 35px;
-
   > div {
     width: 100%;
     height: 30px;
@@ -123,37 +113,28 @@ const DropDown = styled.div`
     line-height: 22px;
     color: #8d94a0;
     transition: 0.25s;
-
     &:hover {
       background: #ebecef;
       transition: 0.25s;
     }
   }
 `;
-const DetailInput = styled.input`
+const DetailInput = styled(DefaultInput)`
   width: 208px;
   height: 28px;
-  vertical-align: top;
-  outline: none;
-  border: none;
   border-bottom: 1px solid #4880ee;
-  font-weight: 500;
   font-size: 14px;
   line-height: 22px;
   padding: 5px 8px;
 `;
-const DetailButton = styled.button`
+const DetailButton = styled(DefaultButton)`
   width: 100%;
   height: 36px;
   margin-top: 16px;
   background: #4880ee;
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
   font-size: 14px;
   line-height: 22px;
   color: #ffffff;
-  cursor: pointer;
   transition: 0.25s;
   &:hover {
     background: #82aeff;
@@ -202,23 +183,23 @@ const SearchBox = () => {
   const onSubmitFormForMainKeyword = useCallback(() => {
     if (!mainKeyword) return alert("검색어를 입력해주세요");
     navigate(`/search/title/${mainKeyword}/1`);
-  }, [mainKeyword]);
+  }, [mainKeyword, navigate]);
   const onSubmitFormForDetailKeyword = useCallback(() => {
     if (!detailKeyword) return alert("검색어를 입력해주세요");
     navigate(`/search/${searchType}/${detailKeyword}/1`);
-  }, [searchType, detailKeyword]);
+  }, [detailKeyword, navigate, searchType]);
   return (
     <Wrapper>
-      <MainInput onSubmit={onSubmitFormForMainKeyword}>
+      <MainForm onSubmit={onSubmitFormForMainKeyword}>
         <button>
           <img src={searchIcon} alt="검색 하기"></img>
         </button>
-        <input
+        <MainInput
           placeholder={"검색어를 입력하세요"}
           value={mainKeyword}
           onChange={onChangeMainKeyword}
-        ></input>
-      </MainInput>
+        ></MainInput>
+      </MainForm>
       <MainButton onClick={onChangeDetailMode}>상세 검색</MainButton>
       {isDetailMode && (
         <DetailForm>

@@ -13,11 +13,11 @@ const Text = styled.span`
   text-align: center;
   display: block;
 `;
-const NullData = () => {
+const NullData = (props: { contents: string }) => {
   return (
     <>
       <Icon src={nullIcon}></Icon>
-      <Text>검색된 결과가 없습니다.</Text>
+      <Text>{props.contents}</Text>
     </>
   );
 };

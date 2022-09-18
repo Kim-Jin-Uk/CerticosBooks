@@ -17,7 +17,7 @@ const Main = () => {
         target: null,
       },
     });
-  }, []);
+  }, [dispatch]);
   return (
     <>
       <Header></Header>
